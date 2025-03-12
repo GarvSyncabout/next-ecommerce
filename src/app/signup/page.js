@@ -2,42 +2,52 @@
 import React, { useState } from "react";
 import Button from "../components/Button/Button";
 import { useRouter } from "next/navigation";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Signup = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [firstname, setFirstName] = useState("");
+  const [lastname, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phonenumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
 
   const router = useRouter();
 
   const submitHandler = async (e) => {
-    e.preventDefault();
-    const formData = {
-      firstName,
-      lastName,
-      email,
-      phoneNumber,
-      password,
-    };
     try {
-      const response = await fetch("api/signup", {
+      e.preventDefault();
+      const data = {
+        firstname,
+        lastname,
+        phonenumber,
+        email,
+        password,
+      };
+
+      const response = await fetch("/api/signup", {
         method: "POST",
-        body: formData,
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(data),
       });
-      if (!response.ok) {
-        throw new Error("Signup failed");
-      } else {
-        await response.json();
-        router.push("/login");
+
+      if (response.status === 201) {
+        setFirstName("");
+        setLastName("");
+        setPhoneNumber("");
+        setEmail("");
+        setPassword("");
+        setTimeout(() => {
+          router.push("/login");
+        }, 3000);
+        toast.success("User Signup Successful!", {
+          autoClose: 2000,
+        });
       }
-    } catch (error) {
-      alert(error.message);
-      s;
+    } catch (err) {
+      toast.error("User Detail Not Submited", err.message);
     }
   };
 
@@ -47,6 +57,7 @@ const Signup = () => {
 
   return (
     <section>
+      <ToastContainer />
       <div className="min-h-screen flex justify-center items-center">
         <form
           onSubmit={submitHandler}
@@ -61,7 +72,7 @@ const Signup = () => {
               type="text"
               placeholder={"First Name"}
               required
-              value={firstName}
+              value={firstname}
               onChange={(e) => {
                 setFirstName(e.target.value);
               }}
@@ -71,7 +82,7 @@ const Signup = () => {
               type="text"
               placeholder={"Last Name"}
               required
-              value={lastName}
+              value={lastname}
               onChange={(e) => {
                 setLastName(e.target.value);
               }}
@@ -82,7 +93,7 @@ const Signup = () => {
             type="tel"
             placeholder={"Phone Number"}
             required
-            value={phoneNumber}
+            value={phonenumber}
             onChange={(e) => {
               setPhoneNumber(e.target.value);
             }}
