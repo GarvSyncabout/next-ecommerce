@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Button from "../components/Button/Button";
 import { useRouter } from "next/navigation";
 
-const signup = () => {
+const Signup = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -125,4 +125,4 @@ const signup = () => {
   );
 };
 
-export default signup;
+export default Signup;
