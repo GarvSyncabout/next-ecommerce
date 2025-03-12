@@ -1,12 +1,20 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const Product = () => {
+  const router = useRouter();
   useEffect(() => {
     const cookies = document.cookie;
     const token = cookies.replace("token=", "");
     window.localStorage.setItem("token", token);
+
+    const isLogedin = window.localStorage.getItem("token");
+
+    if (!isLogedin) {
+      router.replace("/login");
+    }
   }, []);
   return (
     <section>
