@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const navItmes = [
   {
@@ -24,25 +24,42 @@ const navItmes = [
 const dropdownOptions = [
   {
     id: 1,
-    label: "SignUp",
-    href: "/signup",
-  },
-  {
-    id: 2,
     label: "Profile",
     href: "/profile",
   },
   {
-    id: 3,
+    id: 2,
     label: "Logout",
-    href: "/logout",
+    href: "",
   },
 ];
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAuthnticated, setIsAuthnticated] = useState("");
 
-  const isLogin = false;
+  useEffect(() => {
+    const cookies = document.cookie;
+
+    const token = cookies.replace("token=", "");
+
+    window.localStorage.setItem("token", token);
+
+    const isLogedin = window.localStorage.getItem("token");
+
+    setIsAuthnticated(isLogedin);
+
+    if (!isLogedin) {
+      router.replace("/login");
+    }
+  }, []);
+
+  const logout = () => {
+    window.localStorage.removeItem("token");
+    document.cookie = "";
+
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   return (
     <header className="fixed w-full py-4">
@@ -63,7 +80,7 @@ const Header = () => {
           </ul>
         </div>
         <div>
-          {isLogin === true ? (
+          {isAuthnticated ? (
             <div id="dropdown" className="relative">
               <div
                 onClick={() => {
@@ -86,7 +103,9 @@ const Header = () => {
                   return (
                     <Link
                       onClick={() => {
-                        setIsMenuOpen(!isMenuOpen);
+                        option.label = "logout"
+                          ? logout()
+                          : setIsMenuOpen(!isMenuOpen);
                       }}
                       className="flex mt-1 text-md font-medium"
                       href={option.href}

@@ -1,7 +1,4 @@
 import mongoose, { Schema } from "mongoose";
-import connectToMongo from "../db/MongodbConnnect";
-
-connectToMongo();
 
 const userSchema = new Schema({
   firstname: {
@@ -23,6 +20,10 @@ const userSchema = new Schema({
   },
   password: {
     type: String,
+    required: true,
+  },
+  isAdmin: {
+    type: Boolean,
     required: true,
   },
 });
