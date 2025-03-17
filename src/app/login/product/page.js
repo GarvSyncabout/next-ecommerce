@@ -9,10 +9,11 @@ const Product = () => {
   const router = useRouter();
   useEffect(() => {
     const cookies = document.cookie;
-
+    console.log(cookies);
     const token = cookies.replace("token=", "");
 
     window.localStorage.setItem("token", token);
+    console.log(token);
 
     const isLogedin = window.localStorage.getItem("token");
 

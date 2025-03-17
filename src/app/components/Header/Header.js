@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const navItmes = [
   {
@@ -36,7 +38,9 @@ const dropdownOptions = [
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isAuthnticated, setIsAuthnticated] = useState("");
+  const [isAuthnticated, setIsAuthnticated] = useState();
+
+  const router = useRouter();
 
   useEffect(() => {
     const cookies = document.cookie;
@@ -54,11 +58,22 @@ const Header = () => {
     }
   }, []);
 
-  const logout = () => {
-    window.localStorage.removeItem("token");
-    document.cookie = "";
-
-    setIsMenuOpen(!isMenuOpen);
+  const logout = async () => {
+    try {
+      await fetch("/api/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      window.localStorage.removeItem("token");
+      setIsAuthnticated(false);
+      setIsMenuOpen(!isMenuOpen);
+      router.replace("/login");
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   return (

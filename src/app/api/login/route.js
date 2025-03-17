@@ -24,7 +24,12 @@ export async function POST(request) {
 
         const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET);
 
-        cookieStore.set("token", token);
+        cookieStore.set("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          path: "/",
+        });
 
         return NextResponse.json(
           { message: "Logged in successfully" },

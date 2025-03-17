@@ -10,11 +10,14 @@ export async function POST(request) {
     await connectToMongo();
 
     const cookieStore = await cookies();
+
     const token = cookieStore.get("token");
 
-    console.log("Token from cookies:", token?.value);
+    const user = jwt.decode(token.value, process.env.JWT_SECRET);
 
-    const userId = jwt.decode(token, process.env.JWT_SECRET);
+    const updatedUser = await User.findOne({ email: user.email });
+
+    updatedUser ? cookieStore.delete("token") : "not valid user";
 
     return NextResponse.json({ message: "done" });
   } catch (err) {
