@@ -86,7 +86,7 @@ const Header = () => {
               <li key={item.id}>
                 <Link
                   className="text-[#000000] text-md font-medium leading-0"
-                  href={item.href}
+                  href={item.hre}
                 >
                   {item.label}
                 </Link>
