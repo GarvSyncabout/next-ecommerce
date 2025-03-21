@@ -4,6 +4,7 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 
 const navItmes = [
   {
@@ -27,7 +28,12 @@ const dropdownOptions = [
   {
     id: 1,
     label: "Profile",
-    href: "/profile",
+    href: "/login/profile",
+  },
+  {
+    id: 3,
+    label: "Dashboard",
+    href: "/login/dashboard",
   },
   {
     id: 2,
@@ -38,23 +44,17 @@ const dropdownOptions = [
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isAuthnticated, setIsAuthnticated] = useState();
+  const [isAuthnticated, setIsAuthnticated] = useState(false);
 
   const router = useRouter();
 
   useEffect(() => {
-    const cookies = document.cookie;
+    const token = sessionStorage.getItem("token");
 
-    const token = cookies.replace("token=", "");
-
-    window.localStorage.setItem("token", token);
-
-    const isLogedin = window.localStorage.getItem("token");
-
-    setIsAuthnticated(isLogedin);
-
-    if (!isLogedin) {
-      router.replace("/login");
+    if (token) {
+      setIsAuthnticated(true);
+    } else {
+      router.push("/login");
     }
   }, []);
 
@@ -67,7 +67,7 @@ const Header = () => {
         },
         credentials: "include",
       });
-      window.localStorage.removeItem("token");
+      window.sessionStorage.removeItem("token");
       setIsAuthnticated(false);
       setIsMenuOpen(!isMenuOpen);
       router.replace("/login");
@@ -95,7 +95,14 @@ const Header = () => {
           </ul>
         </div>
         <div>
-          {isAuthnticated ? (
+          {isAuthnticated === false ? (
+            <Link
+              href={"/signup"}
+              className="text-blue-500 hover:text-blue-700 text-md font-medium"
+            >
+              SignUp
+            </Link>
+          ) : (
             <div id="dropdown" className="relative">
               <div
                 onClick={() => {
@@ -114,31 +121,17 @@ const Header = () => {
                     : "absolute z-50 mt-6 top-0 left-0 content-['']"
                 }
               >
-                {dropdownOptions.map((option) => {
-                  return (
-                    <Link
-                      onClick={() => {
-                        option.label = "logout"
-                          ? logout()
-                          : setIsMenuOpen(!isMenuOpen);
-                      }}
-                      className="flex mt-1 text-md font-medium"
-                      href={option.href}
-                      key={option.id}
-                    >
-                      {option.label}
-                    </Link>
-                  );
-                })}
+                <Link
+                  onClick={() => {
+                    logout();
+                    setIsMenuOpen(!isMenuOpen);
+                  }}
+                  href={"/"}
+                >
+                  logout
+                </Link>
               </div>
             </div>
-          ) : (
-            <Link
-              href={"/signup"}
-              className="text-blue-500 hover:text-blue-700 text-md font-medium"
-            >
-              SignUp
-            </Link>
           )}
         </div>
       </nav>

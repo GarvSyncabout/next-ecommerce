@@ -3,43 +3,31 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "../components/Button/Button";
 import { ToastContainer, toast } from "react-toastify";
-
+import { useDispatch, useSelector } from "react-redux";
+import { setEmail, setPassword, loginUser } from "@/redux/slice/authSlice";
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+
+  const { email, password, isLoading, error, user } = useSelector(
+    (state) => state.auth
+  );
 
   const router = useRouter();
 
-  const loginHandler = async (e) => {
-    try {
-      e.preventDefault();
+  const loginHandler = (e) => {
+    e.preventDefault();
 
-      const data = {
-        email,
-        password,
-      };
+    dispatch(loginUser({ email, password }));
 
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+    if (user) {
+      dispatch(setEmail(""));
+      dispatch(setPassword(""));
+
+      router.push("/login/product");
+
+      toast.success("User login Successful!", {
+        autoClose: 2000,
       });
-
-      if (response.status === 200) {
-        setEmail("");
-        setPassword("");
-
-        setTimeout(() => {
-          router.push("/login/product");
-        }, 3000);
-        toast.success("User login Successful!", {
-          autoClose: 2000,
-        });
-      }
-    } catch (err) {
-      toast.error("User Detail Not Submited", err.message);
     }
   };
 
@@ -61,9 +49,7 @@ const Login = () => {
             placeholder={"Your Email"}
             required
             value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
+            onChange={(e) => dispatch(setEmail(e.target.value))}
           />
           <input
             className=" border-2 border-[#EDEDED] px-4 py-2 rounded-md w-full focus:outline-none"
@@ -71,9 +57,7 @@ const Login = () => {
             placeholder={"********"}
             required
             value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
+            onChange={(e) => dispatch(setPassword(e.target.value))}
           />
           <div className="flex justify-between items-center gap-4">
             <Button

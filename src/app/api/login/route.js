@@ -22,14 +22,12 @@ export async function POST(request) {
       if (isMatch) {
         const cookieStore = await cookies();
 
-        const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET);
+        const token = jwt.sign(
+          { email: user.email, isAdmin: user.isAdmin },
+          process.env.JWT_SECRET
+        );
 
-        cookieStore.set("token", token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-          path: "/",
-        });
+        cookieStore.set("token", token);
 
         return NextResponse.json(
           { message: "Logged in successfully" },

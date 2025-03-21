@@ -4,8 +4,11 @@ import Button from "../components/Button/Button";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { useDispatch } from "react-redux";
+import { userData } from "@/app/redux/slice/userSlice";
 const Signup = () => {
+  const dispatch = useDispatch();
+
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -17,7 +20,7 @@ const Signup = () => {
   const submitHandler = async (e) => {
     try {
       e.preventDefault();
-      const data = {
+      const newUser = {
         firstname,
         lastname,
         phonenumber,
@@ -25,27 +28,20 @@ const Signup = () => {
         password,
       };
 
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      dispatch(userData(newUser));
 
-      if (response.status === 201) {
-        setFirstName("");
-        setLastName("");
-        setPhoneNumber("");
-        setEmail("");
-        setPassword("");
-        setTimeout(() => {
-          router.push("/login");
-        }, 3000);
-        toast.success("User Signup Successful!", {
-          autoClose: 2000,
-        });
-      }
+      setFirstName("");
+      setLastName("");
+      setPhoneNumber("");
+      setEmail("");
+      setPassword("");
+
+      setTimeout(() => {
+        router.push("/login");
+      }, 3000);
+      toast.success("User Signup Successful!", {
+        autoClose: 2000,
+      });
     } catch (err) {
       toast.error("User Detail Not Submited", err.message);
     }

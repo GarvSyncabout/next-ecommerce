@@ -4,23 +4,15 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const Product = () => {
-  const [isAuthnticated, setIsAuthnticated] = useState("");
+  const [isAuthnticated, setIsAuthnticated] = useState(false);
 
   const router = useRouter();
   useEffect(() => {
-    const cookies = document.cookie;
-    console.log(cookies);
-    const token = cookies.replace("token=", "");
+    const token = sessionStorage.getItem("token"); // Access localStorage in useEffect
+    setIsAuthnticated(token ? !isAuthnticated : isAuthnticated); // Convert token to boolean (true if exists)
 
-    window.localStorage.setItem("token", token);
-    console.log(token);
-
-    const isLogedin = window.localStorage.getItem("token");
-
-    setIsAuthnticated(isLogedin);
-
-    if (!isLogedin) {
-      router.replace("/login");
+    if (!token) {
+      router.push("/login"); // Redirect to login if no token
     }
   }, []);
   return (
