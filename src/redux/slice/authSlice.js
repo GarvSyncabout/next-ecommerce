@@ -12,17 +12,16 @@ export const loginUser = createAsyncThunk(
         },
         body: JSON.stringify({ email, password }),
       });
-
+      const cookies = document.cookie;
+      const token = cookies.split("token=")[1].trim();
+      window.localStorage.setItem("token", token);
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
-      const cookies = document.cookie;
-      const token = cookies.split("token=")[1].trim();
-      window.sessionStorage.setItem("token", token);
 
-      return data; // Return user data on success
+      return data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -64,5 +63,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setEmail, setPassword, data } = authSlice.actions;
+export const { setEmail, setPassword, data, token } = authSlice.actions;
 export default authSlice.reducer;

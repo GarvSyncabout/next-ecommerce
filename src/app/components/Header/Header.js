@@ -24,35 +24,18 @@ const navItmes = [
   },
 ];
 
-const dropdownOptions = [
-  {
-    id: 1,
-    label: "Profile",
-    href: "/login/profile",
-  },
-  {
-    id: 3,
-    label: "Dashboard",
-    href: "/login/dashboard",
-  },
-  {
-    id: 2,
-    label: "Logout",
-    href: "",
-  },
-];
-
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthnticated, setIsAuthnticated] = useState(false);
+  const [user, setUser] = useState(null);
 
   const router = useRouter();
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
-
+    const token = window.localStorage.getItem("token");
     if (token) {
       setIsAuthnticated(true);
+      setUser(jwtDecode(token));
     } else {
       router.push("/login");
     }
@@ -67,7 +50,7 @@ const Header = () => {
         },
         credentials: "include",
       });
-      window.sessionStorage.removeItem("token");
+      window.localStorage.removeItem("token");
       setIsAuthnticated(false);
       setIsMenuOpen(!isMenuOpen);
       router.replace("/login");
@@ -95,14 +78,7 @@ const Header = () => {
           </ul>
         </div>
         <div>
-          {isAuthnticated === false ? (
-            <Link
-              href={"/signup"}
-              className="text-blue-500 hover:text-blue-700 text-md font-medium"
-            >
-              SignUp
-            </Link>
-          ) : (
+          {isAuthnticated ? (
             <div id="dropdown" className="relative">
               <div
                 onClick={() => {
@@ -110,15 +86,52 @@ const Header = () => {
                 }}
                 className={isMenuOpen ? "block" : "relative"}
               >
-                <span className=" cursor-pointer text-md font-medium relative after:absolute after:content-['\25be'] after:top-0 after:text-xl after:leading-[22px] ">
-                  Garv
+                <span className="cursor-pointer text-md font-medium relative after:absolute after:content-['\25be'] after:top-0 after:text-xl after:leading-[22px] ">
+                  {user.username}
                 </span>
               </div>
+
+              {user.isAdmin === true ? (
+                <div
+                  className={
+                    !isMenuOpen
+                      ? "hidden"
+                      : "absolute z-50 mt-8 top-0 left-0 content-['']"
+                  }
+                >
+                  <Link
+                    onClick={() => {
+                      setIsMenuOpen(!isMenuOpen);
+                    }}
+                    href={"/login/dashboard"}
+                  >
+                    dashboard
+                  </Link>
+                </div>
+              ) : (
+                <div
+                  className={
+                    !isMenuOpen
+                      ? "hidden"
+                      : "absolute z-50 mt-8 top-0 left-0 content-['']"
+                  }
+                >
+                  <Link
+                    onClick={() => {
+                      setIsMenuOpen(!isMenuOpen);
+                    }}
+                    href={"/login/profile"}
+                  >
+                    profile
+                  </Link>
+                </div>
+              )}
+
               <div
                 className={
                   !isMenuOpen
                     ? "hidden"
-                    : "absolute z-50 mt-6 top-0 left-0 content-['']"
+                    : "absolute z-50 mt-10 left-0 content-['']"
                 }
               >
                 <Link
@@ -132,6 +145,13 @@ const Header = () => {
                 </Link>
               </div>
             </div>
+          ) : (
+            <Link
+              href={"/signup"}
+              className="text-blue-500 hover:text-blue-700 text-md font-medium"
+            >
+              SignUp
+            </Link>
           )}
         </div>
       </nav>

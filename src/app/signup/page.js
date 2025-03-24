@@ -41,9 +41,9 @@ const Signup = () => {
         setPassword("");
         setTimeout(() => {
           router.push("/login");
-        }, 3000);
+        }, 1000);
         toast.success("User Signup Successful!", {
-          autoClose: 2000,
+          autoClose: 1000,
         });
       }
     } catch (err) {

@@ -11,6 +11,7 @@ export async function POST(request) {
     const body = await request.json();
 
     const { firstname, lastname, phonenumber, email, password } = body;
+    console.log(body);
 
     const existingUser = await User.findOne({ email });
 
@@ -37,6 +38,7 @@ export async function POST(request) {
       email,
       phonenumber,
       password: hashedPassword,
+      isAdmin: false,
     });
 
     return NextResponse.json(

@@ -23,7 +23,7 @@ export async function POST(request) {
         const cookieStore = await cookies();
 
         const token = jwt.sign(
-          { email: user.email, isAdmin: user.isAdmin },
+          { email: user.email, isAdmin: user.isAdmin, username: user.lastname },
           process.env.JWT_SECRET
         );
 

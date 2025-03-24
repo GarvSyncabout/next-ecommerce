@@ -14,7 +14,7 @@ const Login = () => {
 
   const router = useRouter();
 
-  const loginHandler = (e) => {
+  const loginHandler = async (e) => {
     e.preventDefault();
 
     dispatch(loginUser({ email, password }));
@@ -26,6 +26,10 @@ const Login = () => {
       router.push("/login/product");
 
       toast.success("User login Successful!", {
+        autoClose: 2000,
+      });
+    } else if (error) {
+      toast.error(`${error}`, {
         autoClose: 2000,
       });
     }
