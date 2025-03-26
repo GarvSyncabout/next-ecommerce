@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
-
+import { useSelector } from "react-redux";
 const navItmes = [
   {
     id: 1,
@@ -29,17 +29,18 @@ const Header = () => {
   const [isAuthnticated, setIsAuthnticated] = useState(false);
   const [user, setUser] = useState(null);
 
+  const token = useSelector((state) => state.auth.token);
+
   const router = useRouter();
 
   useEffect(() => {
-    const token = window.localStorage.getItem("token");
     if (token) {
-      setIsAuthnticated(true);
       setUser(jwtDecode(token));
+      setIsAuthnticated(true);
     } else {
       router.push("/login");
     }
-  }, []);
+  }, [token]);
 
   const logout = async () => {
     try {
@@ -53,7 +54,7 @@ const Header = () => {
       window.localStorage.removeItem("token");
       setIsAuthnticated(false);
       setIsMenuOpen(!isMenuOpen);
-      router.replace("/login");
+      router.push("/login");
     } catch (error) {
       toast.error(error.message);
     }

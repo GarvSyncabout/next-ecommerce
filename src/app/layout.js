@@ -3,6 +3,7 @@ import "./globals.css";
 import StoreProvider from "@/redux/StoreProvider/StoreProvider";
 
 import Header from "@/app/components/Header/Header";
+
 import Footer from "@/app/components/Footer/Footer";
 
 const geistSans = Geist({
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
         <StoreProvider>
           <Header />
           <main className="w-full m-auto max-w-7xl">{children}</main>
+
           <Footer />
         </StoreProvider>
       </body>

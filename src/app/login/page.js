@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import Button from "../components/Button/Button";
 import { ToastContainer, toast } from "react-toastify";
@@ -7,29 +7,32 @@ import { useDispatch, useSelector } from "react-redux";
 import { setEmail, setPassword, loginUser } from "@/redux/slice/authSlice";
 const Login = () => {
   const dispatch = useDispatch();
-
-  const { email, password, isLoading, error, user } = useSelector(
-    (state) => state.auth
-  );
+  const { email, password, error, user } = useSelector((state) => state.auth);
 
   const router = useRouter();
 
-  const loginHandler = async (e) => {
-    e.preventDefault();
+  const loginHandler = (e) => {
+    try {
+      e.preventDefault();
 
-    dispatch(loginUser({ email, password }));
+      dispatch(loginUser({ email, password }));
 
-    if (user) {
-      dispatch(setEmail(""));
-      dispatch(setPassword(""));
+      if (user.message != "") {
+        dispatch(setEmail(""));
+        dispatch(setPassword(""));
 
-      router.push("/login/product");
+        router.push("/login/product");
 
-      toast.success("User login Successful!", {
-        autoClose: 2000,
-      });
-    } else if (error) {
-      toast.error(`${error}`, {
+        toast.success("User login Successful!", {
+          autoClose: 2000,
+        });
+      } else if (error) {
+        toast.error(`${error}`, {
+          autoClose: 2000,
+        });
+      }
+    } catch (error) {
+      toast.error("User Detail Not Submited", error.message, {
         autoClose: 2000,
       });
     }

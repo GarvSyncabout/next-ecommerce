@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// Async thunk to handle API call
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ email, password }, { rejectWithValue }) => {
@@ -12,16 +11,28 @@ export const loginUser = createAsyncThunk(
         },
         body: JSON.stringify({ email, password }),
       });
-      const cookies = document.cookie;
-      const token = cookies.split("token=")[1].trim();
-      window.localStorage.setItem("token", token);
+
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
 
-      return data;
+      // Extract token from cookies
+      const cookies = document.cookie.split("; ");
+      let token = null;
+      for (let cookie of cookies) {
+        if (cookie.startsWith("token=")) {
+          token = cookie.split("=")[1];
+          break;
+        }
+      }
+
+      if (token) {
+        window.localStorage.setItem("token", token); // Store token in localStorage
+      }
+
+      return { user: data, token }; // Return user data & token
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -34,6 +45,7 @@ const authSlice = createSlice({
     email: "",
     password: "",
     user: null,
+    token: typeof window !== "undefined" ? localStorage.getItem("token") : null, // Load token from localStorage
     isLoading: false,
     error: null,
   },
@@ -44,6 +56,15 @@ const authSlice = createSlice({
     setPassword: (state, action) => {
       state.password = action.payload;
     },
+    setToken: (state, action) => {
+      state.token = action.payload;
+      window.localStorage.setItem("token", action.payload); // Save token to localStorage
+    },
+    logout: (state) => {
+      state.user = null;
+      state.token = null;
+      localStorage.removeItem("token"); // Remove token on logout
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -53,8 +74,8 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
-        state.data = data;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -63,5 +84,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setEmail, setPassword, data, token } = authSlice.actions;
+export const { setEmail, setPassword, setToken, logout } = authSlice.actions;
 export default authSlice.reducer;
