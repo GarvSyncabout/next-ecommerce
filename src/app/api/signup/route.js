@@ -1,19 +1,18 @@
 import { NextResponse } from "next/server";
-import connectToMongo from "@/app/api/db/MongodbConnnect";
+import getClient  from "../db/mongodb";
 import bcrypt from "bcryptjs";
-
-import User from "@/app/api/models/user-schema";
 
 export async function POST(request) {
   try {
-    await connectToMongo();
+    const client = await getClient();
+    const db = client.db(process.env.MONGODB_DB);
+    const collection = db.collection("user")
 
     const body = await request.json();
 
     const { firstname, lastname, phonenumber, email, password } = body;
-    console.log(body);
-
-    const existingUser = await User.findOne({ email });
+ 
+    const  existingUser = await collection.findOne({email})
 
     if (existingUser) {
       return NextResponse.json(
@@ -32,14 +31,17 @@ export async function POST(request) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    await User.create({
+    const user = {
       firstname,
       lastname,
       email,
       phonenumber,
       password: hashedPassword,
       isAdmin: false,
-    });
+      createdAt: new Date(),
+    };
+
+    const result = await collection.insertOne(user);
 
     return NextResponse.json(
       { message: "User registered successfully" },

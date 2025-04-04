@@ -1,20 +1,22 @@
 import { NextResponse } from "next/server";
-import connectToMongo from "@/app/api/db/MongodbConnnect";
+import getClient from "../db/mongodb";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
-import User from "@/app/api/models/user-schema";
 
 export async function POST(request) {
   try {
-    await connectToMongo();
+    
+    const client = await getClient();
+    const db = client.db(process.env.MONGODB_DB);
+    const collection = db.collection("user")
 
     const body = await request.json();
 
     const { email, password } = body;
 
-    const user = await User.findOne({ email });
+    const user = await collection.findOne({ email });
 
     if (user) {
       const isMatch = await bcrypt.compare(password, user.password);

@@ -45,6 +45,10 @@ const Signup = () => {
         toast.success("User Signup Successful!", {
           autoClose: 1000,
         });
+      }else if(response.status === 409){
+        toast.error("User Already Exists", {
+          autoClose: 1000,
+        });
       }
     } catch (err) {
       toast.error("User Detail Not Submited", err.message);

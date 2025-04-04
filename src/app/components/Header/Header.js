@@ -6,6 +6,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { useSelector } from "react-redux";
+
+
+
 const navItmes = [
   {
     id: 1,
@@ -27,11 +30,14 @@ const navItmes = [
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthnticated, setIsAuthnticated] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState("");
+
+
+  
+  const router = useRouter();
 
   const token = useSelector((state) => state.auth.token);
 
-  const router = useRouter();
 
   useEffect(() => {
     if (token) {

@@ -2,7 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "@/redux/StoreProvider/StoreProvider";
 
-import Header from "@/app/components/Header/Header";
+import Header from "./components/Header/Header";
 
 import Footer from "@/app/components/Footer/Footer";
 

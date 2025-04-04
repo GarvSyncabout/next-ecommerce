@@ -5,6 +5,8 @@ import Button from "../components/Button/Button";
 import { ToastContainer, toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { setEmail, setPassword, loginUser } from "@/redux/slice/authSlice";
+
+
 const Login = () => {
   const dispatch = useDispatch();
   const { email, password, error, user } = useSelector((state) => state.auth);
@@ -32,7 +34,7 @@ const Login = () => {
         });
       }
     } catch (error) {
-      toast.error("User Detail Not Submited", error.message, {
+      toast.error("Unauthorized User", error.message, {
         autoClose: 2000,
       });
     }
